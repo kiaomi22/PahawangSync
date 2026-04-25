@@ -2,29 +2,29 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default function Dashboard() {
+export default function Homestay() {
     const navigate = useNavigate();
-    const [boats, setBoats] = useState([]);
+    const [homestays, setHomestays] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [editId, setEditId] = useState(null); 
     
     const [formData, setFormData] = useState({
         name: '',
-        capacity: '',
-        price_per_day: '',
+        total_rooms: '',
+        price_per_night: '',
         status: 'available'
     });
 
     useEffect(() => {
-        fetchBoats();
+        fetchHomestays();
     }, []);
 
-    const fetchBoats = async () => {
+    const fetchHomestays = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/boats');
-            setBoats(response.data.data);
+            const response = await axios.get('http://127.0.0.1:8000/api/homestays');
+            setHomestays(response.data.data);
         } catch (error) {
-            console.error("Gagal mengambil data kapal", error);
+            console.error("Gagal mengambil data homestay", error);
         }
     };
 
@@ -32,13 +32,13 @@ export default function Dashboard() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleEdit = (boat) => {
-        setEditId(boat.id);
+    const handleEdit = (homestay) => {
+        setEditId(homestay.id);
         setFormData({
-            name: boat.name,
-            capacity: boat.capacity,
-            price_per_day: parseInt(boat.price_per_day),
-            status: boat.status
+            name: homestay.name,
+            total_rooms: homestay.total_rooms,
+            price_per_night: parseInt(homestay.price_per_night),
+            status: homestay.status
         });
         setShowForm(true);
     };
@@ -47,30 +47,30 @@ export default function Dashboard() {
         e.preventDefault();
         try {
             if (editId) {
-                await axios.put(`http://127.0.0.1:8000/api/boats/${editId}`, formData);
-                alert('Data Kapal berhasil diperbarui!');
+                await axios.put(`http://127.0.0.1:8000/api/homestays/${editId}`, formData);
+                alert('Data Homestay berhasil diperbarui!');
             } else {
-                await axios.post('http://127.0.0.1:8000/api/boats', formData);
-                alert('Kapal berhasil ditambahkan!');
+                await axios.post('http://127.0.0.1:8000/api/homestays', formData);
+                alert('Homestay berhasil ditambahkan!');
             }
             setShowForm(false); 
             setEditId(null);
-            setFormData({ name: '', capacity: '', price_per_day: '', status: 'available' }); 
-            fetchBoats(); 
+            setFormData({ name: '', total_rooms: '', price_per_night: '', status: 'available' }); 
+            fetchHomestays(); 
         } catch (error) {
-            console.error("Gagal menyimpan kapal", error);
+            console.error("Gagal menyimpan homestay", error);
             alert('Gagal menyimpan data!');
         }
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Apakah kamu yakin ingin menghapus kapal ini?")) {
+        if (window.confirm("Apakah kamu yakin ingin menghapus homestay ini?")) {
             try {
-                await axios.delete(`http://127.0.0.1:8000/api/boats/${id}`);
-                alert('Kapal berhasil dihapus!');
-                fetchBoats(); 
+                await axios.delete(`http://127.0.0.1:8000/api/homestays/${id}`);
+                alert('Homestay berhasil dihapus!');
+                fetchHomestays(); 
             } catch (error) {
-                console.error("Gagal menghapus kapal", error);
+                console.error("Gagal menghapus homestay", error);
                 alert('Gagal menghapus data!');
             }
         }
@@ -84,11 +84,11 @@ export default function Dashboard() {
     return (
         <div style={{ padding: '30px', maxWidth: '1000px', margin: 'auto', fontFamily: 'sans-serif' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h2>🏝️ CMS Logistik PahawangSync</h2>
+                <h2>🏠 CMS Homestay PahawangSync</h2>
                 <div>
-                    {/* INI TOMBOL MENUJU HALAMAN HOMESTAY */}
-                    <button onClick={() => navigate('/homestay')} style={{ padding: '8px 15px', marginRight: '10px', background: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-                        🏠 Kelola Homestay
+                    {/* INI TOMBOL KEMBALI KE HALAMAN KAPAL */}
+                    <button onClick={() => navigate('/dashboard')} style={{ padding: '8px 15px', marginRight: '10px', background: '#17a2b8', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+                        Kembali ke Kapal
                     </button>
                     <button onClick={handleLogout} style={{ padding: '8px 15px', background: '#ff4d4d', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
                         Logout
@@ -98,34 +98,34 @@ export default function Dashboard() {
             <hr style={{ margin: '20px 0' }} />
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3>Daftar Kapal (Boats)</h3>
+                <h3>Daftar Penginapan (Homestay)</h3>
                 <button 
                     onClick={() => {
                         setShowForm(!showForm);
                         setEditId(null);
-                        setFormData({ name: '', capacity: '', price_per_day: '', status: 'available' });
+                        setFormData({ name: '', total_rooms: '', price_per_night: '', status: 'available' });
                     }} 
                     style={{ padding: '8px 15px', background: showForm ? '#6c757d' : '#007bff', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
                 >
-                    {showForm ? 'Batal' : '+ Tambah Kapal'}
+                    {showForm ? 'Batal' : '+ Tambah Homestay'}
                 </button>
             </div>
 
             {showForm && (
                 <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #ddd' }}>
-                    <h4>{editId ? 'Edit Data Kapal' : 'Formulir Kapal Baru'}</h4>
+                    <h4>{editId ? 'Edit Data Homestay' : 'Formulir Homestay Baru'}</h4>
                     <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
                         <div>
-                            <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Nama Kapal</label>
+                            <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Nama Homestay</label>
                             <input type="text" name="name" value={formData.name} onChange={handleChange} required style={{ padding: '8px', width: '180px' }} />
                         </div>
                         <div>
-                            <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Kapasitas</label>
-                            <input type="number" name="capacity" value={formData.capacity} onChange={handleChange} required style={{ padding: '8px', width: '80px' }} />
+                            <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Jml. Kamar</label>
+                            <input type="number" name="total_rooms" value={formData.total_rooms} onChange={handleChange} required style={{ padding: '8px', width: '80px' }} />
                         </div>
                         <div>
-                            <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Harga/Hari (Rp)</label>
-                            <input type="number" name="price_per_day" value={formData.price_per_day} onChange={handleChange} required style={{ padding: '8px', width: '120px' }} />
+                            <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Harga/Malam (Rp)</label>
+                            <input type="number" name="price_per_night" value={formData.price_per_night} onChange={handleChange} required style={{ padding: '8px', width: '120px' }} />
                         </div>
                         
                         {editId && (
@@ -133,14 +133,14 @@ export default function Dashboard() {
                                 <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Status</label>
                                 <select name="status" value={formData.status} onChange={handleChange} style={{ padding: '8px' }}>
                                     <option value="available">Available</option>
+                                    <option value="full">Full (Penuh)</option>
                                     <option value="maintenance">Maintenance</option>
-                                    <option value="booked">Booked</option>
                                 </select>
                             </div>
                         )}
 
                         <button type="submit" style={{ padding: '9px 15px', background: editId ? '#ffc107' : '#28a745', color: editId ? 'black' : 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                            {editId ? 'Simpan Perubahan' : 'Simpan Kapal'}
+                            {editId ? 'Simpan Perubahan' : 'Simpan Homestay'}
                         </button>
                     </form>
                 </div>
@@ -150,38 +150,38 @@ export default function Dashboard() {
                 <thead style={{ backgroundColor: '#f8f9fa' }}>
                     <tr>
                         <th>ID</th>
-                        <th>Nama Kapal</th>
-                        <th>Kapasitas</th>
-                        <th>Harga / Hari</th>
+                        <th>Nama Homestay</th>
+                        <th>Jml. Kamar</th>
+                        <th>Harga / Malam</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {boats.map((boat) => (
-                        <tr key={boat.id}>
-                            <td>{boat.id}</td>
-                            <td><strong>{boat.name}</strong></td>
-                            <td>{boat.capacity} Orang</td>
-                            <td>Rp {parseInt(boat.price_per_day).toLocaleString('id-ID')}</td>
+                    {homestays.map((homestay) => (
+                        <tr key={homestay.id}>
+                            <td>{homestay.id}</td>
+                            <td><strong>{homestay.name}</strong></td>
+                            <td>{homestay.total_rooms} Kamar</td>
+                            <td>Rp {parseInt(homestay.price_per_night).toLocaleString('id-ID')}</td>
                             <td>
                                 <span style={{ 
-                                    background: boat.status === 'available' ? '#d4edda' : (boat.status === 'maintenance' ? '#fff3cd' : '#f8d7da'), 
-                                    color: boat.status === 'available' ? '#155724' : (boat.status === 'maintenance' ? '#856404' : '#721c24'),
+                                    background: homestay.status === 'available' ? '#d4edda' : (homestay.status === 'maintenance' ? '#fff3cd' : '#f8d7da'), 
+                                    color: homestay.status === 'available' ? '#155724' : (homestay.status === 'maintenance' ? '#856404' : '#721c24'),
                                     padding: '5px 10px', borderRadius: '15px', fontSize: '14px', fontWeight: 'bold'
                                 }}>
-                                    {boat.status.toUpperCase()}
+                                    {homestay.status.toUpperCase()}
                                 </span>
                             </td>
                             <td>
-                                <button onClick={() => handleEdit(boat)} style={{ padding: '5px 10px', marginRight: '5px', background: '#ffc107', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Edit</button>
-                                <button onClick={() => handleDelete(boat.id)} style={{ padding: '5px 10px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Hapus</button>
+                                <button onClick={() => handleEdit(homestay)} style={{ padding: '5px 10px', marginRight: '5px', background: '#ffc107', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Edit</button>
+                                <button onClick={() => handleDelete(homestay.id)} style={{ padding: '5px 10px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Hapus</button>
                             </td>
                         </tr>
                     ))}
-                    {boats.length === 0 && (
+                    {homestays.length === 0 && (
                         <tr>
-                            <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>Belum ada data kapal.</td>
+                            <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>Belum ada data homestay.</td>
                         </tr>
                     )}
                 </tbody>
