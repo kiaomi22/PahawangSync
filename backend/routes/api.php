@@ -14,3 +14,7 @@ Route::get('/user', function (Request $request) {
 use App\Http\Controllers\Api\BoatController;
 
 Route::apiResource('boats', BoatController::class);
+use App\Http\Controllers\HomestayController;
+Route::apiResource('homestays', HomestayController::class);
+use App\Http\Controllers\SnorkelingController;
+Route::apiResource('snorkelings', SnorkelingController::class);
