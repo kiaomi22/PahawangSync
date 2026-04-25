@@ -10,3 +10,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+use App\Http\Controllers\Api\BoatController;
+
+Route::apiResource('boats', BoatController::class);
