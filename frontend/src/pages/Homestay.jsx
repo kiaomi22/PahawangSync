@@ -2,6 +2,16 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const Icons = {
+    Anchor: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="3"></circle><line x1="12" y1="22" x2="12" y2="8"></line><path d="M5 12H2a10 10 0 0 0 20 0h-3"></path></svg>,
+    Home: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>,
+    Water: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h4l3-9 5 18 3-9h5"></path></svg>,
+    Logout: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>,
+    Edit: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>,
+    Trash: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>,
+    Plus: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+};
+
 export default function Homestay() {
     const navigate = useNavigate();
     const [homestays, setHomestays] = useState([]);
@@ -9,183 +19,198 @@ export default function Homestay() {
     const [editId, setEditId] = useState(null); 
     
     const [formData, setFormData] = useState({
-        name: '',
-        total_rooms: '',
-        price_per_night: '',
-        status: 'available'
+        name: '', total_rooms: '', price_per_night: '', status: 'available'
     });
 
-    useEffect(() => {
-        fetchHomestays();
-    }, []);
+    useEffect(() => { fetchHomestays(); }, []);
 
     const fetchHomestays = async () => {
         try {
             const response = await axios.get('http://127.0.0.1:8000/api/homestays');
             setHomestays(response.data.data);
-        } catch (error) {
-            console.error("Gagal mengambil data homestay", error);
-        }
+        } catch (error) { console.error("Gagal", error); }
     };
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    const handleChange = (e) => { setFormData({ ...formData, [e.target.name]: e.target.value }); };
 
     const handleEdit = (homestay) => {
         setEditId(homestay.id);
-        setFormData({
-            name: homestay.name,
-            total_rooms: homestay.total_rooms,
-            price_per_night: parseInt(homestay.price_per_night),
-            status: homestay.status
-        });
+        setFormData({ name: homestay.name, total_rooms: homestay.total_rooms, price_per_night: parseInt(homestay.price_per_night), status: homestay.status });
         setShowForm(true);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            if (editId) {
-                await axios.put(`http://127.0.0.1:8000/api/homestays/${editId}`, formData);
-                alert('Data Homestay berhasil diperbarui!');
-            } else {
-                await axios.post('http://127.0.0.1:8000/api/homestays', formData);
-                alert('Homestay berhasil ditambahkan!');
-            }
-            setShowForm(false); 
-            setEditId(null);
-            setFormData({ name: '', total_rooms: '', price_per_night: '', status: 'available' }); 
+            if (editId) await axios.put(`http://127.0.0.1:8000/api/homestays/${editId}`, formData);
+            else await axios.post('http://127.0.0.1:8000/api/homestays', formData);
+            setShowForm(false); setEditId(null); setFormData({ name: '', total_rooms: '', price_per_night: '', status: 'available' }); 
             fetchHomestays(); 
-        } catch (error) {
-            console.error("Gagal menyimpan homestay", error);
-            alert('Gagal menyimpan data!');
-        }
+        } catch (error) { alert('Gagal menyimpan data!'); }
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Apakah kamu yakin ingin menghapus homestay ini?")) {
-            try {
-                await axios.delete(`http://127.0.0.1:8000/api/homestays/${id}`);
-                alert('Homestay berhasil dihapus!');
-                fetchHomestays(); 
-            } catch (error) {
-                console.error("Gagal menghapus homestay", error);
-                alert('Gagal menghapus data!');
-            }
+        if (window.confirm("Hapus homestay ini dari sistem?")) {
+            await axios.delete(`http://127.0.0.1:8000/api/homestays/${id}`);
+            fetchHomestays(); 
         }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('auth_token');
-        navigate('/login');
-    };
+    const handleLogout = () => { localStorage.removeItem('auth_token'); navigate('/login'); };
 
     return (
-        <div style={{ padding: '30px', maxWidth: '1000px', margin: 'auto', fontFamily: 'sans-serif' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h2>🏠 CMS Homestay PahawangSync</h2>
-                <div>
-                    {/* INI TOMBOL KEMBALI KE HALAMAN KAPAL */}
-                    <button onClick={() => navigate('/dashboard')} style={{ padding: '8px 15px', marginRight: '10px', background: '#17a2b8', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-                        Kembali ke Kapal
-                    </button>
-                    <button onClick={handleLogout} style={{ padding: '8px 15px', background: '#ff4d4d', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-                        Logout
-                    </button>
+        <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f4f7f6', fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+                * { box-sizing: border-box; }
+                .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; color: #94a3b8; text-decoration: none; border-radius: 8px; transition: all 0.2s; cursor: pointer; margin-bottom: 5px; font-weight: 500; fontSize: 14px; }
+                .sidebar-item:hover { background-color: rgba(255,255,255,0.05); color: #fff; }
+                .sidebar-item.active { background-color: #0ea5e9; color: #fff; }
+                .action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; }
+                .btn-edit { background: #fef3c7; color: #d97706; } .btn-edit:hover { background: #fde68a; }
+                .btn-delete { background: #fee2e2; color: #dc2626; } .btn-delete:hover { background: #fecaca; }
+                .input-modern { width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; outline: none; transition: all 0.2s; }
+                .input-modern:focus { border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15); }
+                .table-row { border-bottom: 1px solid #f1f5f9; transition: background 0.2s; }
+                .table-row:hover { background-color: #f8fafc; }
+            `}</style>
+
+            {/* SIDEBAR */}
+            <div style={{ width: '260px', backgroundColor: '#0f172a', color: 'white', padding: '24px 16px', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ padding: '0 10px', marginBottom: '40px' }}>
+                    <div style={{ fontSize: '20px', fontWeight: 700, color: '#fff', letterSpacing: '-0.5px' }}>
+                        <span style={{ color: '#0ea5e9' }}>Pahawang</span>Sync.
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' }}>B2B Workspace</div>
+                </div>
+
+                <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '11px', color: '#475569', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', paddingLeft: '10px', fontWeight: 600 }}>Logistics</div>
+                    <div className="sidebar-item" onClick={() => navigate('/dashboard')}>
+                        <Icons.Anchor /> Armada Kapal
+                    </div>
+                    {/* HOMESTAY ACTIVE */}
+                    <div className="sidebar-item active">
+                        <Icons.Home /> Penginapan
+                    </div>
+                    <div className="sidebar-item" onClick={() => navigate('/snorkeling')}>
+                        <Icons.Water /> Alat Snorkeling
+                    </div>
+                </div>
+
+                <div style={{ borderTop: '1px solid #1e293b', paddingTop: '20px' }}>
+                    <div className="sidebar-item" onClick={handleLogout} style={{ color: '#ef4444' }}>
+                        <Icons.Logout /> Keluar Sesi
+                    </div>
                 </div>
             </div>
-            <hr style={{ margin: '20px 0' }} />
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3>Daftar Penginapan (Homestay)</h3>
-                <button 
-                    onClick={() => {
-                        setShowForm(!showForm);
-                        setEditId(null);
-                        setFormData({ name: '', total_rooms: '', price_per_night: '', status: 'available' });
-                    }} 
-                    style={{ padding: '8px 15px', background: showForm ? '#6c757d' : '#007bff', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-                >
-                    {showForm ? 'Batal' : '+ Tambah Homestay'}
-                </button>
-            </div>
+            {/* AREA KONTEN UTAMA */}
+            <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
+                    <div>
+                        <h1 style={{ fontSize: '24px', fontWeight: 600, color: '#0f172a', margin: '0 0 8px 0', letterSpacing: '-0.5px' }}>Penginapan (Homestay)</h1>
+                        <p style={{ color: '#64748b', margin: 0, fontSize: '14px' }}>Manajemen inventaris kamar dan villa lokal.</p>
+                    </div>
+                    <button 
+                        onClick={() => { setShowForm(!showForm); setEditId(null); setFormData({ name: '', total_rooms: '', price_per_night: '', status: 'available' }); }} 
+                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', background: showForm ? '#e2e8f0' : '#0ea5e9', color: showForm ? '#475569' : 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 500, fontSize: '14px', transition: 'all 0.2s' }}
+                    >
+                        {showForm ? 'Batal' : <><Icons.Plus /> Tambah Penginapan</>}
+                    </button>
+                </div>
 
-            {showForm && (
-                <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #ddd' }}>
-                    <h4>{editId ? 'Edit Data Homestay' : 'Formulir Homestay Baru'}</h4>
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-                        <div>
-                            <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Nama Homestay</label>
-                            <input type="text" name="name" value={formData.name} onChange={handleChange} required style={{ padding: '8px', width: '180px' }} />
-                        </div>
-                        <div>
-                            <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Jml. Kamar</label>
-                            <input type="number" name="total_rooms" value={formData.total_rooms} onChange={handleChange} required style={{ padding: '8px', width: '80px' }} />
-                        </div>
-                        <div>
-                            <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Harga/Malam (Rp)</label>
-                            <input type="number" name="price_per_night" value={formData.price_per_night} onChange={handleChange} required style={{ padding: '8px', width: '120px' }} />
-                        </div>
-                        
-                        {editId && (
+                {showForm && (
+                    <div style={{ background: 'white', padding: '24px', borderRadius: '12px', marginBottom: '32px', boxShadow: '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0' }}>
+                        <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', color: '#1e293b', fontWeight: 600 }}>{editId ? 'Perbarui Data Penginapan' : 'Registrasi Penginapan Baru'}</h3>
+                        <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', alignItems: 'end' }}>
                             <div>
-                                <label style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Status</label>
-                                <select name="status" value={formData.status} onChange={handleChange} style={{ padding: '8px' }}>
-                                    <option value="available">Available</option>
-                                    <option value="full">Full (Penuh)</option>
-                                    <option value="maintenance">Maintenance</option>
-                                </select>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#64748b', marginBottom: '8px' }}>Nama Homestay</label>
+                                <input className="input-modern" type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="Cth: Homestay Pak Kumis" />
                             </div>
-                        )}
+                            <div>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#64748b', marginBottom: '8px' }}>Jumlah Kamar</label>
+                                <input className="input-modern" type="number" name="total_rooms" value={formData.total_rooms} onChange={handleChange} required placeholder="0" />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#64748b', marginBottom: '8px' }}>Tarif (Rp / Malam)</label>
+                                <input className="input-modern" type="number" name="price_per_night" value={formData.price_per_night} onChange={handleChange} required placeholder="0" />
+                            </div>
+                            
+                            {editId && (
+                                <div>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#64748b', marginBottom: '8px' }}>Status Ketersediaan</label>
+                                    <select className="input-modern" name="status" value={formData.status} onChange={handleChange} style={{ backgroundColor: 'white' }}>
+                                        <option value="available">Tersedia</option>
+                                        <option value="full">Penuh (Full)</option>
+                                        <option value="maintenance">Perawatan (Maintenance)</option>
+                                    </select>
+                                </div>
+                            )}
 
-                        <button type="submit" style={{ padding: '9px 15px', background: editId ? '#ffc107' : '#28a745', color: editId ? 'black' : 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                            {editId ? 'Simpan Perubahan' : 'Simpan Homestay'}
-                        </button>
-                    </form>
+                            <button type="submit" style={{ padding: '12px 20px', background: '#0f172a', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 500, fontSize: '14px', height: '45px', transition: 'background 0.2s' }}>
+                                {editId ? 'Simpan Perubahan' : 'Simpan ke Database'}
+                            </button>
+                        </form>
+                    </div>
+                )}
+
+                <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                        <thead style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                            <tr>
+                                <th style={{ padding: '16px 24px', color: '#64748b', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Info Properti</th>
+                                <th style={{ padding: '16px 24px', color: '#64748b', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tarif Sewa</th>
+                                <th style={{ padding: '16px 24px', color: '#64748b', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</th>
+                                <th style={{ padding: '16px 24px', color: '#64748b', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Manajemen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {homestays.map((home) => (
+                                <tr key={home.id} className="table-row">
+                                    <td style={{ padding: '16px 24px' }}>
+                                        <div style={{ color: '#0f172a', fontWeight: 600, fontSize: '14px' }}>{home.name}</div>
+                                        <div style={{ color: '#64748b', fontSize: '13px', marginTop: '4px' }}>ID: #{home.id} • Kapasitas: {home.total_rooms} Kamar</div>
+                                    </td>
+                                    <td style={{ padding: '16px 24px', color: '#0f172a', fontWeight: 500, fontSize: '14px' }}>
+                                        Rp {parseInt(home.price_per_night).toLocaleString('id-ID')}
+                                    </td>
+                                    <td style={{ padding: '16px 24px' }}>
+                                        <span style={{ 
+                                            display: 'inline-flex', alignItems: 'center', gap: '6px',
+                                            background: home.status === 'available' ? '#f0fdf4' : (home.status === 'full' ? '#fffbeb' : '#fef2f2'), 
+                                            color: home.status === 'available' ? '#166534' : (home.status === 'full' ? '#b45309' : '#991b1b'),
+                                            border: `1px solid ${home.status === 'available' ? '#bbf7d0' : (home.status === 'full' ? '#fde68a' : '#fecaca')}`,
+                                            padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 500
+                                        }}>
+                                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: home.status === 'available' ? '#22c55e' : (home.status === 'full' ? '#f59e0b' : '#ef4444') }}></span>
+                                            {home.status === 'available' ? 'Available' : (home.status === 'full' ? 'Full' : 'Maintenance')}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                                        <button className="action-btn btn-edit" onClick={() => handleEdit(home)} style={{ marginRight: '8px' }}>
+                                            <Icons.Edit /> Edit
+                                        </button>
+                                        <button className="action-btn btn-delete" onClick={() => handleDelete(home.id)}>
+                                            <Icons.Trash /> Hapus
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                            {homestays.length === 0 && (
+                                <tr>
+                                    <td colSpan="4" style={{ textAlign: 'center', padding: '60px 20px', color: '#94a3b8' }}>
+                                        <div style={{ marginBottom: '16px', opacity: 0.5 }}><Icons.Home /></div>
+                                        <div style={{ fontSize: '15px', fontWeight: 500, color: '#475569' }}>Tidak ada penginapan ditemukan</div>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
-            )}
 
-            <table border="1" cellPadding="12" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', backgroundColor: 'white' }}>
-                <thead style={{ backgroundColor: '#f8f9fa' }}>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nama Homestay</th>
-                        <th>Jml. Kamar</th>
-                        <th>Harga / Malam</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {homestays.map((homestay) => (
-                        <tr key={homestay.id}>
-                            <td>{homestay.id}</td>
-                            <td><strong>{homestay.name}</strong></td>
-                            <td>{homestay.total_rooms} Kamar</td>
-                            <td>Rp {parseInt(homestay.price_per_night).toLocaleString('id-ID')}</td>
-                            <td>
-                                <span style={{ 
-                                    background: homestay.status === 'available' ? '#d4edda' : (homestay.status === 'maintenance' ? '#fff3cd' : '#f8d7da'), 
-                                    color: homestay.status === 'available' ? '#155724' : (homestay.status === 'maintenance' ? '#856404' : '#721c24'),
-                                    padding: '5px 10px', borderRadius: '15px', fontSize: '14px', fontWeight: 'bold'
-                                }}>
-                                    {homestay.status.toUpperCase()}
-                                </span>
-                            </td>
-                            <td>
-                                <button onClick={() => handleEdit(homestay)} style={{ padding: '5px 10px', marginRight: '5px', background: '#ffc107', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Edit</button>
-                                <button onClick={() => handleDelete(homestay.id)} style={{ padding: '5px 10px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Hapus</button>
-                            </td>
-                        </tr>
-                    ))}
-                    {homestays.length === 0 && (
-                        <tr>
-                            <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>Belum ada data homestay.</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+            </div>
         </div>
     );
 }
