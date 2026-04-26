@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// Komponen SVG Icons Profesional (Tanpa Emoji)
 const Icons = {
     Anchor: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="3"></circle><line x1="12" y1="22" x2="12" y2="8"></line><path d="M5 12H2a10 10 0 0 0 20 0h-3"></path></svg>,
     Home: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>,
@@ -62,7 +61,6 @@ export default function Dashboard() {
     return (
         <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f4f7f6', fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
             
-            {/* INJEKSI CSS MODERN */}
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
                 * { box-sizing: border-box; }
@@ -78,7 +76,6 @@ export default function Dashboard() {
                 .table-row:hover { background-color: #f8fafc; }
             `}</style>
 
-            {/* SIDEBAR B2B PREMIUM (Dark Mode) */}
             <div style={{ width: '260px', backgroundColor: '#0f172a', color: 'white', padding: '24px 16px', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ padding: '0 10px', marginBottom: '40px' }}>
                     <div style={{ fontSize: '20px', fontWeight: 700, color: '#fff', letterSpacing: '-0.5px' }}>
@@ -100,6 +97,12 @@ export default function Dashboard() {
                     </div>
                 </div>
 
+                <div style={{ fontSize: '11px', color: '#475569', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', marginTop: '20px', paddingLeft: '10px', fontWeight: 600 }}>Transactions</div>
+                    <div className="sidebar-item" onClick={() => navigate('/booking')}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> 
+                        Pesanan (Booking)
+                    </div>
+
                 <div style={{ borderTop: '1px solid #1e293b', paddingTop: '20px' }}>
                     <div className="sidebar-item" onClick={handleLogout} style={{ color: '#ef4444' }}>
                         <Icons.Logout /> Keluar Sesi
@@ -107,10 +110,8 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* AREA KONTEN UTAMA */}
             <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
                 
-                {/* Header Section */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px' }}>
                     <div>
                         <h1 style={{ fontSize: '24px', fontWeight: 600, color: '#0f172a', margin: '0 0 8px 0', letterSpacing: '-0.5px' }}>Armada Kapal</h1>
@@ -124,7 +125,6 @@ export default function Dashboard() {
                     </button>
                 </div>
 
-                {/* Card Form Modern */}
                 {showForm && (
                     <div style={{ background: 'white', padding: '24px', borderRadius: '12px', marginBottom: '32px', boxShadow: '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0' }}>
                         <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', color: '#1e293b', fontWeight: 600 }}>{editId ? 'Perbarui Data Armada' : 'Registrasi Armada Baru'}</h3>
@@ -160,7 +160,6 @@ export default function Dashboard() {
                     </div>
                 )}
 
-                {/* Card Tabel B2B */}
                 <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>

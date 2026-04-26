@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard'; 
 import Homestay from './pages/Homestay';
 import Snorkeling from './pages/Snorkeling';
+import Booking from './pages/Booking';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} /> 
         <Route path="/homestay" element={<Homestay />} />
         <Route path="/snorkeling" element={<Snorkeling />} />
+        <Route path="/booking" element={<Booking />} />
       </Routes>
     </BrowserRouter>
   );
