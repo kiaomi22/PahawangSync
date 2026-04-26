@@ -10,12 +10,18 @@ export default function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/login', {
-                email,
-                password
-            });
+            const response = await axios.post('http://127.0.0.1:8000/api/login', { email, password });
+            const user = response.data.user;
+            
             localStorage.setItem('auth_token', response.data.token);
-            navigate('/dashboard');
+            localStorage.setItem('user_id', user.id);
+            localStorage.setItem('user_name', user.name);
+
+            if (email === 'admin@pahawang.com') {
+    navigate('/dashboard'); 
+} else {
+    navigate('/agen'); 
+}
         } catch (error) {
             console.error("Login gagal", error);
             alert('Email atau Password salah!');
@@ -33,7 +39,6 @@ export default function Login() {
                 .login-btn:hover { background: #1e293b; }
             `}</style>
 
-            {/* Sisi Kiri: Branding */}
             <div style={{ flex: 1, background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'relative', zIndex: 1, maxWidth: '400px' }}>
                     <div style={{ fontSize: '32px', fontWeight: 700, marginBottom: '20px', letterSpacing: '-1px' }}>
@@ -44,7 +49,6 @@ export default function Login() {
                 </div>
             </div>
 
-            {/* Sisi Kanan: Form Login */}
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
                 <div style={{ width: '100%', maxWidth: '400px', background: 'white', padding: '40px', borderRadius: '16px', boxShadow: '0 4px 6px rgba(0,0,0,0.02), 0 10px 15px rgba(0,0,0,0.03)', border: '1px solid #f1f5f9' }}>
                     <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', color: '#0f172a', fontWeight: 700 }}>Selamat Datang</h2>
@@ -60,6 +64,10 @@ export default function Login() {
                             <input type="password" className="login-input" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" />
                         </div>
                         <button type="submit" className="login-btn">Masuk ke Sistem</button>
+                        <div style={{ marginTop: '20px', textAlign: 'center', borderTop: '1px solid #e2e8f0', paddingTop: '15px' }}>
+                        <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '10px' }}>Belum punya akun Agen Mitra?</p>
+                        <button type="button" onClick={() => navigate('/register')} style={{ width: '100%', padding: '10px', background: 'transparent', color: '#0ea5e9', border: '1px solid #0ea5e9', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Daftar Akun Baru</button>
+                    </div>
                     </form>
                 </div>
             </div>

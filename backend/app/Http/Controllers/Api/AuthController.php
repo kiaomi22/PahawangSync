@@ -9,6 +9,28 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'agen_travel', 
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Registrasi Berhasil!',
+            'user' => $user
+        ], 201);
+    }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -22,13 +44,16 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'message' => 'Email atau Password salah'], 401);
         }
 
-        $token = base64_encode($user->email . '|PahawangSync2026');
+        $token = base64_encode($user->email . '|' . $user->role);
 
         return response()->json([
             'success' => true,
-            'message' => 'Login berhasil',
             'token' => $token,
-            'user' => $user
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'role' => $user->role 
+            ]
         ]);
     }
 }
